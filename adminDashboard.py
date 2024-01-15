@@ -30,7 +30,7 @@ def get():
             # 'designation': {'$first': '$empInfo.designation'},
             'DaysAbsent': {'$sum': {'$cond': [{'$eq': ['$status', 'absent']}, 1, 0]}},
             'DaysPresent': {'$sum': {'$cond': [{'$eq': ['$status', 'present']}, 1, 0]}},
-            'leave': {'$sum': {'$cond': [{'$eq': ['$status', 'leave']}, 1, 0]}},
+            'late': {'$sum': {'$cond': [{'$eq': ['$status', 'late']}, 1, 0]}},
             'HalfDays': {'$sum': {'$cond': [{'$eq': ['$status', 'half day']}, 1, 0]}}
         }
         },
@@ -43,7 +43,7 @@ def get():
             # 'designation': 1,
             'DaysAbsent': 1,
             'DaysPresent': 1,
-            'leave': 1,
+            'late': 1,
             'HalfDays': 1,
             '_id': 0
         }
@@ -53,6 +53,7 @@ def get():
         cursor = mongo.db.AttendanceRecords.aggregate(pipeline)
         result = list(cursor)
         json_result = json.loads(json_util.dumps(result))
+        print(json_result)
 
         if json_result:
             return jsonify({"result": json_result})
