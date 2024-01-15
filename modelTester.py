@@ -71,7 +71,7 @@ def train_images():
         global label_mapping  # Use the global label_mapping variable
         unique_labels = list(set(labels))
         label_mapping = {label: idx for idx, label in enumerate(unique_labels)}
-
+        # print("labels", label_mapping)
         # Map labels to integers starting from 0
         mapped_labels = [label_mapping[label] for label in labels]
 
@@ -181,11 +181,17 @@ def get_images_and_labels(base_path):
 modelTester_bp = Blueprint("modelTester_bp", __name__)
 @modelTester_bp.route("/attendance/register", methods = ["POST"])
 def reg():
-    reqData = request.json
-    email = reqData["email"]
-    name = reqData["name"]
-    add(email, name)
-    return jsonify({"message": "Registered",
-                    "email": email})
+    try:
+        reqData = request.json
+        email = reqData["email"]
+        name = "FaceLog"
+        add(email, name)
+        return jsonify({"message": "Registered",
+                        "email": email}), 200
+    except Exception as e:
+        return jsonify({
+            "message": "An error occured while registering employee",
+            "error": str(e)
+        })
 
 

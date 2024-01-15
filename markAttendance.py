@@ -1,8 +1,8 @@
 from config import mongo
 from flask_pymongo import pymongo
-from flask import Blueprint, request,jsonify
+from flask import Blueprint, request,jsonify, json
 import datetime
-from bson import ObjectId
+from bson import ObjectId, json_util
 from modelTester import recognize
 
 #################################
@@ -60,9 +60,11 @@ def mark():
 
         if isRecognized:
             employeeRec = mongo.db.Employee.find_one({ "email": status })
-            if not employeeRec:
+            employeeRecJson = json.loads(json_util.dumps(employeeRec))
+            print("employeeRecJson", employeeRecJson)
+            if not employeeRecJson:
                 return jsonify({"message": "Employee not found"})
-            id = employeeRec["_id"]
+            id = employeeRecJson["_id"]["$oid"]
             print(id)
 
             latestSalaryPolicy = mongo.db.salaryPolicy.find_one(
@@ -76,7 +78,7 @@ def mark():
             clockIn = clockIn
             status = calculate_attendance_status()
 
-            if clockIn:
+            if clockIn == "in":
                 mongo.db.AttendanceRecords.insert_one({
                 # "_id": ObjectId(id),
                 "dateTimeIn": datetime.datetime.now(),
@@ -85,8 +87,9 @@ def mark():
                 "salaryPolicy": ObjectId(latestSalaryPolicyId)
             })
                 return jsonify({"message": "Clocked in successfully",
-                                "empId": ObjectId(id)})
-            else:
+                                "employee Id": id}), 200
+            
+            elif clockIn == "out":
             # Clocking out
                 today = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
                 existing_record = mongo.db.AttendanceRecords.find_one({
@@ -101,7 +104,7 @@ def mark():
                         {"$set": {"dateTimeOut": datetime.datetime.now()}}
                     )
                     return jsonify({"message": "Clocked out successfully",
-                                    "empId": id})
+                                    "employee Id": id}), 200
                 else:
                     return jsonify({"message": "No clock in record found for today"})
                 
