@@ -2,7 +2,7 @@ from config import app, api, mongo
 from flask_restful import Resource, reqparse
 from werkzeug.security import generate_password_hash, check_password_hash
 from adminRegister import registerAdmin 
-from adminDashboard import AdminDashboard
+# from adminDashboard import AdminDashboard
 from login import Login
 from policy import TimeInterval, Days, SalaryDeduction
 from attendance import MarkAttendance
@@ -12,6 +12,7 @@ from getDeductedSalary import getDeductedSalary_bp
 from markAttendance import markAttendance_bp
 from modelTester import modelTester_bp
 from markAbsent import markAbsent_bp
+from adminDashboard import adminDashboard_bp
 
 # index page or default page        
 @app.route("/")
@@ -27,7 +28,7 @@ api.add_resource(registerEmployee, '/registerEmployee')
 api.add_resource(ChangePassword, '/ChangePassword')
 
 # Ammar's code
-api.add_resource(AdminDashboard, '/admin/dashboard')
+# api.add_resource(AdminDashboard, '/admin/dashboard')
 api.add_resource(Days, '/policy/setDays')
 api.add_resource(SalaryDeduction, '/policy/setSalaryDeduction')
 
@@ -35,6 +36,7 @@ app.register_blueprint(getDeductedSalary_bp)
 app.register_blueprint(markAttendance_bp)
 app.register_blueprint(modelTester_bp)
 app.register_blueprint(markAbsent_bp)
+app.register_blueprint(adminDashboard_bp)
 
 if __name__ == "__main__":
     app.run(debug=True)
